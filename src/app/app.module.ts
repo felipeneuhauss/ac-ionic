@@ -31,7 +31,15 @@ import {TouchID} from "@ionic-native/touch-id";
   imports: [
     BrowserModule,
     HttpModule,
-    IonicModule.forRoot(MyApp),
+    IonicModule.forRoot(MyApp, {
+      backButtonText: 'Voltar'/*,
+      backButtonItem: 'close'
+      iconMode: 'ios',
+      modalEnter: 'modal-slide-in',
+      modalLeave: 'modal-slide-out',
+      tabsPlacement: 'bottom',
+      pageTransition: 'ios-transition'*/
+    }),
     FormsModule,
     ReactiveFormsModule
   ],

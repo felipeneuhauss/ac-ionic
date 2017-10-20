@@ -42,3 +42,11 @@ $ ionic generate page Detail --no-module
 $ ionic generate page About --constants
 $ ionic generate pipe MyFilterPipe
 ```
+
+### Running on c9.ionic
+
+Create a workspace using HTML
+
+```
+ ionic serve -p $PORT -r 8081
+```

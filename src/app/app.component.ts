@@ -38,16 +38,18 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      this.touchId.isAvailable()
-        .then(
-            (res) => {
-                this.touchAvailable = true;
-                console.log('TouchID is available!', res);
-            },(err) => {
-                this.touchAvailable = false;
-                console.error('TouchID is not available', err);
-            }
-        );
+      if (this.platform.is('cordova')) {
+        this.touchId.isAvailable()
+          .then(
+              (res) => {
+                  this.touchAvailable = true;
+                  console.log('TouchID is available!', res);
+              },(err) => {
+                  this.touchAvailable = false;
+                  console.error('TouchID is not available', err);
+              }
+          );
+        }
     });
   }
 

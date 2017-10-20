@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController} from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, Platform} from 'ionic-angular';
 import {AuthProvider} from "../../providers/auth/auth";
 import {ApiProvider} from "../../providers/api/api";
 import {HomePage} from "../home/home";
@@ -19,6 +19,7 @@ import {TouchID} from "@ionic-native/touch-id";
 })
 @Component({
   templateUrl: 'login.html',
+  selector: 'page-login'
 })
 export class LoginPage implements OnInit {
 
@@ -27,7 +28,7 @@ export class LoginPage implements OnInit {
   showTouchIdButton: boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, public loading: LoadingController,
-  private auth: AuthProvider, private api: ApiProvider, private logger: LoggerProvider,
+  private auth: AuthProvider, private api: ApiProvider, private logger: LoggerProvider, public platform: Platform,
               private touchId : TouchID) {}
 
   login() {
@@ -38,7 +39,7 @@ export class LoginPage implements OnInit {
     this.api.login(this.form.email, this.form.password).then(
         (response: any) => {
           this.auth.setToken(response.access_token, response.expires_in + Date.now());
-          this.navCtrl.push(HomePage);
+          this.navCtrl.setRoot(HomePage);
           loader.dismiss();
         }, (error: any) => {
            this.logger.error(error);
@@ -51,9 +52,11 @@ export class LoginPage implements OnInit {
   }
 
   signInWithTouchId() {
-    this.touchId.verifyFingerprint('Desbloquear usando o Touch ID').then((res) => {
-
-    });
+     if (this.platform.is('cordova')) {
+        this.touchId.verifyFingerprint('Desbloquear usando o Touch ID').then((res) => {
+    
+        });
+     }
   }
 
   ionViewDidLoad() {
@@ -68,8 +71,10 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit () {
-      this.touchId.isAvailable().then(() => {
-         this.showTouchIdButton = true;
-      });
+     if (this.platform.is('cordova')) {
+        this.touchId.isAvailable().then(() => {
+           this.showTouchIdButton = true;
+        });
+     }
   }
 }

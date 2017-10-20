@@ -19,6 +19,7 @@
       <form (ngSubmit)="login()" #loginForm="ngForm" autocomplete="off">
         <ion-list>
           <ion-item>
+            <ion-label stacked>Email</ion-label>
             <ion-input
                     [(ngModel)]="form.email"
                     type="email"
@@ -32,6 +33,7 @@
             </div>
           </ion-item>
           <ion-item>
+            <ion-label stacked>Password</ion-label>
             <ion-input [(ngModel)]="form.password"
                        type="password"
                        name="password"
@@ -44,9 +46,9 @@
             </div>
           </ion-item>
 
-          <button ion-button full round type="submit" [disabled]="!loginForm.form.valid">Login</button>
-          <button ion-button full round type="button" (click)="signUpPage()">Nova conta</button>
-          <button ion-button full round type="button" (click)="signInWithTouchId()">
+          <button ion-button full type="submit" [disabled]="!loginForm.form.valid">Login</button>
+          <button ion-button full type="button" (tap)="signUpPage()">Nova conta</button>
+          <button ion-button full type="button" (tap)="signInWithTouchId()">
             <ion-icon name="finger-print"></ion-icon>
           </button>
         </ion-list>
