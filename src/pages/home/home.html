@@ -1,0 +1,21 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Condomínios</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <ion-item *ngFor="let station of stations" (click)="selectStation(station)">
+      <ion-thumbnail item-start>
+        <img src="{{station.picture}}">
+      </ion-thumbnail>
+      <h2>{{station.enterprise}}</h2>
+      <p>{{station.location}} • {{station.summary.total}} litros</p>
+      <!--<button ion-button clear item-end >Ver</button>-->
+    </ion-item>
+  </ion-list>
+</ion-content>

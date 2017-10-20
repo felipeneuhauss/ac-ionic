@@ -1,0 +1,32 @@
+<!--
+  Generated template for the StationDetailPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header *ngIf="station">
+
+  <ion-navbar>
+    <ion-title>
+      Estação {{station.enterprise}}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content class="outer-content">
+  <ion-list *ngIf="station.summary">
+    <ion-item><ion-icon name="analytics" item-start></ion-icon>{{station.summary.total}} litros até hoje</ion-item>
+    <ion-item><ion-icon name="beaker" item-start></ion-icon>{{station.summary.total_m3}} até hoje</ion-item>
+    <ion-item><ion-icon name="calendar" item-start></ion-icon>Média diária de {{station.summary.day_average_m3}}</ion-item>
+    <ion-item><ion-icon name="clock" item-start></ion-icon>{{station.summary.liters_today}} hoje</ion-item>
+  </ion-list>
+  <ion-card>
+    <ion-card-header>
+      Gráfico de consumo em (m³)
+    </ion-card-header>
+    <ion-card-content >
+      <canvas #lineCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
