@@ -32,7 +32,7 @@ import {TouchID} from "@ionic-native/touch-id";
     BrowserModule,
     HttpModule,
     IonicModule.forRoot(MyApp, {
-      backButtonText: 'Voltar'/*,
+      backButtonText: ''/*,
       backButtonItem: 'close'
       iconMode: 'ios',
       modalEnter: 'modal-slide-in',

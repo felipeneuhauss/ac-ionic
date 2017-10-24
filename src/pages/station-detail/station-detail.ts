@@ -25,14 +25,16 @@ export class StationDetailPage implements OnInit {
     station: any = {};
     stationId: number;
     lineChart: any;
+    intervalLoadChart: any;
 
     constructor(public navCtrl: NavController, private auth: AuthProvider,
                 public navParams: NavParams, private api: ApiProvider, private storage: LocalStorageProvider) {
         this.stationId = navParams.get('stationId');
+        console.log('station-id', this.stationId);
     }
 
     getStation() {
-        this.api.get('/api/stations/' + this.stationId).subscribe(
+        this.api.get('stations/' + this.stationId).subscribe(
             (response: any) => {
                 this.station = response;
                 console.log(this.station);
@@ -78,9 +80,12 @@ export class StationDetailPage implements OnInit {
     }
 
     ngAfterViewInit() {
-        setTimeout(()=> {
-            console.log('ngAfterViewInit ChartJsPage', this.lineCanvas);
-        }, )
+        this.intervalLoadChart = setInterval(()=> {
+           this.api.get('stations/'+this.stationId+'/chart').subscribe((response) => {
+               console.log('Call the chart', this.lineCanvas, response); 
+               this.setupChart(response);
+           });
+        }, 60000);
         if (!this.auth.getToken()) {
             this.navCtrl.setRoot(LoginPage);
         }
@@ -88,6 +93,11 @@ export class StationDetailPage implements OnInit {
 
     ionViewDidLoad() {
         this.getStation();
+    }
+    
+    ionViewDidLeave() {
+        clearInterval(this.intervalLoadChart);
+        console.log('ionViewDidLeave');
     }
 
     ngOnInit() {

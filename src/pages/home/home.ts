@@ -22,7 +22,7 @@ export class HomePage implements OnInit {
   }
 
   getStations() {
-    this.api.get('/api/stations').subscribe(
+    this.api.get('stations').subscribe(
         (response) => {
           this.stations = response;
         }
@@ -56,7 +56,7 @@ export class HomePage implements OnInit {
         {
           text: 'OK',
           handler: data => {
-            this.api.get('/api/stations/' + this.selectedStation.id + '/check-password/' + data.password).subscribe(
+            this.api.get('stations/' + this.selectedStation.id + '/check-password/' + data.password).subscribe(
                 (response) => {
                   if (response.success) {
                     localStorage.setItem('station-' + this.selectedStation.id + '-password', data.password);

@@ -18,6 +18,8 @@ export class ApiProvider {
 
     public static baseUrl: string = 'http://api.aguacinza.eco.br';
 
+    public static apiUrl: string = 'http://api.aguacinza.eco.br/api/';
+
     private headers: Headers = new Headers();
 
     constructor(private http: Http,
@@ -26,37 +28,37 @@ export class ApiProvider {
 
     }
 
-    get(url: string = '') {
+    get(url: string = '', loadingMessage: string = 'Aguarde...') {
 
         this.setAuthorization();
 
         let loader = this.loading.create({
-            content: 'Aguarde...'
+            content: loadingMessage
         });
 
         loader.present();
 
         let options = new RequestOptions({headers: this.headers});
 
-        return this.http.get(ApiProvider.baseUrl + url,
+        return this.http.get(ApiProvider.apiUrl + url,
             options).map((res: Response) => {
                 loader.dismiss();
                 return res.json()
         });
     }
 
-    post(url: string = '', payload: object = {}) {
+    post(url: string = '', payload: object = {}, loadingMessage: string = 'Aguarde...') {
 
         this.setAuthorization();
 
         let loader = this.loading.create({
-            content: 'Aguarde...'
+            content: loadingMessage
         });
         loader.present();
 
         let options = new RequestOptions({headers: this.headers});
 
-        return this.http.post(ApiProvider.baseUrl + url,
+        return this.http.post(ApiProvider.apiUrl + url,
             payload,
             options).toPromise().then((res: any) => {
             loader.dismiss();
@@ -98,7 +100,6 @@ export class ApiProvider {
 
     private setAuthorization() {
         if (this.auth.hasToken() && this.auth.getToken()) {
-            console.log('token', this.auth.getToken());
             this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
         }
     }

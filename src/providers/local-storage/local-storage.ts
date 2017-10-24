@@ -17,7 +17,7 @@ export class LocalStorageProvider {
 
   get (item: string) : any {
     let value : any = localStorage.getItem(item);
-    if (value !== undefined && value != null) {
+    if (value !== undefined && value != null && value !== 'undefined') {
       return JSON.parse(localStorage.getItem(item));
     }
     return null;

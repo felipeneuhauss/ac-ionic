@@ -38,7 +38,12 @@ ion-menu {
 }
 
 .header {
- -webkit-box-shadow: 0 2px 6px 0px #bebebe;
-    -moz-box-shadow: 0 2px 6px 0px #bebebe;
-         box-shadow: 0 2px 6px 0px #bebebe;   
+    background: white;
+    -webkit-box-shadow: 0 2px 6px 0px #c8c8c8;
+       -moz-box-shadow: 0 2px 6px 0px #c8c8c8;
+            box-shadow: 0 2px 6px 0px #c8c8c8;   
+}
+
+.scroll-content {
+    background:#ECECEC;
 }
