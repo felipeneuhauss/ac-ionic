@@ -98,7 +98,8 @@ export class ApiProvider {
 
     private setAuthorization() {
         if (this.auth.hasToken() && this.auth.getToken()) {
-            this.headers.append('Authorization', 'Bearer ' + this.auth.getToken());
+            console.log('token', this.auth.getToken());
+            this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
         }
     }
 

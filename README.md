@@ -50,3 +50,8 @@ Create a workspace using HTML
 ```
  ionic serve -p $PORT -r 8081
 ```
+
+
+## Access condominium
+
+Senha: 1slnHb

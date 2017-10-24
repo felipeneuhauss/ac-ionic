@@ -26,3 +26,19 @@
     top: 50%;
     transform: translateY(-50%);
 }
+
+ion-menu {
+    .item {
+        padding-left:0;
+    }
+    
+    .item-inner {
+        padding-left:16px;
+    }
+}
+
+.header {
+ -webkit-box-shadow: 0 2px 6px 0px #bebebe;
+    -moz-box-shadow: 0 2px 6px 0px #bebebe;
+         box-shadow: 0 2px 6px 0px #bebebe;   
+}

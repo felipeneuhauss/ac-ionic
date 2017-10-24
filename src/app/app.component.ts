@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -12,12 +12,12 @@ import { TouchID } from '@ionic-native/touch-id';
 @Component({
   templateUrl: 'app.html'
 })
-export class MyApp {
+export class MyApp implements OnInit {
   @ViewChild(Nav) nav: Nav;
 
   rootPage: any = HomePage;
 
-  touchAvailable : boolean;
+  touchAvailable : boolean = false;
 
   pages: Array<{title: string, component: any}>;
 
@@ -38,18 +38,6 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      if (this.platform.is('cordova')) {
-        this.touchId.isAvailable()
-          .then(
-              (res) => {
-                  this.touchAvailable = true;
-                  console.log('TouchID is available!', res);
-              },(err) => {
-                  this.touchAvailable = false;
-                  console.error('TouchID is not available', err);
-              }
-          );
-        }
     });
   }
 
@@ -62,6 +50,22 @@ export class MyApp {
   logout() {
     this.auth.destroyToken();
     this.nav.setRoot(LoginPage);
+  }
+  
+  ngOnInit() {
+    console.log('initializeApp', this.touchAvailable)
+      if (this.platform.is('cordova')) {
+        this.touchId.isAvailable()
+        .then(
+            (res) => {
+                this.touchAvailable = true;
+                console.log('TouchID is available!', res);
+            },(err) => {
+                this.touchAvailable = false;
+                console.error('TouchID is not available', err);
+            }
+        );
+      }
   }
 
   ngAfterViewInit() {
