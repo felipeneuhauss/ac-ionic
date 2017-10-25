@@ -62,4 +62,8 @@ export class AuthProvider {
     this.storage.remove('expiration');
   }
 
+
+  user() {
+    return this.storage.get('user');
+  }
 }

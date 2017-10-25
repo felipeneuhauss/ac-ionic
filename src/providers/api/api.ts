@@ -103,5 +103,4 @@ export class ApiProvider {
             this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
         }
     }
-
 }

@@ -10,8 +10,8 @@
       <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
         {{p.title}}
       </button>
-      <button menuClose ion-item *ngIf="touchAvailable">
-        Touch ID
+      <button (tap)="saveTouchId()" ion-item>
+        Ativar Touch ID {{touchIdResponse}}
       </button>
       <button menuClose ion-item (click)="logout()">
         Sair

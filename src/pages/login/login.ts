@@ -59,11 +59,9 @@ export class LoginPage implements OnInit {
   }
 
   signInWithTouchId() {
-     if (this.platform.is('cordova')) {
-        this.touchId.verifyFingerprint('Desbloquear usando o Touch ID').then((res) => {
-    
-        });
-     }
+      this.touchId.verifyFingerprint('Desbloquear usando o Touch ID').then((res) => {
+
+      });
   }
 
   ionViewDidLoad() {
