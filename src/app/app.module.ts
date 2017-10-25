@@ -18,6 +18,7 @@ import { LoggerProvider } from '../providers/logger/logger';
 import { StationDetailPage } from "../pages/station-detail/station-detail";
 import { LocalStorageProvider } from '../providers/local-storage/local-storage';
 import {TouchID} from "@ionic-native/touch-id";
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import {TouchID} from "@ionic-native/touch-id";
     AuthProvider,
     LoggerProvider,
     LocalStorageProvider,
-    TouchID
+    TouchID,
+    UniqueDeviceID
   ]
 })
 export class AppModule {}
