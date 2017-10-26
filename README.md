@@ -59,3 +59,12 @@ Senha: 1slnHb
 
 ## URL
 
+## Update npm dependencies
+npm i -g npm-check-updates
+npm-check-updates -u
+npm install
+
+## Problems with dependencies
+rm -rf node_modules/
+npm cache clean
+npm install
