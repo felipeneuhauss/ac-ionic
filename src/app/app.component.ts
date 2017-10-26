@@ -53,6 +53,16 @@ export class MyApp implements OnInit {
                   console.error('TouchID is not available', err);
               }
           );
+          
+      // Push
+      var notificationOpenedCallback = function(jsonData) {
+        console.log('notificationOpenedCallback: ' + JSON.stringify(jsonData));
+      };
+  
+      window["plugins"].OneSignal
+        .startInit("caf4c3c6-4b53-4f5b-93c3-410c868481d6", "167004169647")
+        .handleNotificationOpened(notificationOpenedCallback)
+        .endInit();
     });
   }
 

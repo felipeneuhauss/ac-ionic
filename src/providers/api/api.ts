@@ -16,9 +16,9 @@ import {LocalStorageProvider} from "../local-storage/local-storage";
 @Injectable()
 export class ApiProvider {
 
-    public static baseUrl: string = 'http://api.aguacinza.eco.br';
+    public static baseUrl: string = 'https://ac-api-felipeneuhauss.c9users.io/';
 
-    public static apiUrl: string = 'http://api.aguacinza.eco.br/api/';
+    public static apiUrl: string = 'https://ac-api-felipeneuhauss.c9users.io/api/';
 
     private headers: Headers = new Headers();
 
