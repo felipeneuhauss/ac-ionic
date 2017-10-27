@@ -19,7 +19,7 @@ import { StationDetailPage } from "../pages/station-detail/station-detail";
 import { LocalStorageProvider } from '../providers/local-storage/local-storage';
 import {TouchID} from "@ionic-native/touch-id";
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
-// import { OneSignal } from '@ionic-native/onesignal';
+import { OneSignal } from '@ionic-native/onesignal';
 
 @NgModule({
   declarations: [
@@ -64,8 +64,8 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
     LoggerProvider,
     LocalStorageProvider,
     TouchID,
-    UniqueDeviceID /*,
-    OneSignal */
+    UniqueDeviceID,
+    OneSignal
   ]
 })
 export class AppModule {}
