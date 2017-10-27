@@ -9,7 +9,7 @@ import { AuthProvider } from "../providers/auth/auth";
 import { TouchID } from '@ionic-native/touch-id';
 import { ApiProvider } from '../providers/api/api';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
-import { OneSignal } from '@ionic-native/onesignal';
+// import { OneSignal } from '@ionic-native/onesignal';
 
 @Component({
   templateUrl: 'app.html'
@@ -28,7 +28,7 @@ export class MyApp implements OnInit {
   constructor(public platform: Platform, public statusBar: StatusBar, private touchId: TouchID,
               public splashScreen: SplashScreen, private auth : AuthProvider, private api: ApiProvider,
               private alertCtrl: AlertController, private uniqueDeviceID: UniqueDeviceID,
-              private oneSignal: OneSignal) {
+              /* private oneSignal: OneSignal */) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
@@ -56,13 +56,13 @@ export class MyApp implements OnInit {
           );
           
 
-      this.oneSignal.startInit("caf4c3c6-4b53-4f5b-93c3-410c868481d6", "167004169647");
-        
-      this.oneSignal.handleNotificationReceived().subscribe(() => {
-       // do something when notification is received
-      });
-        
-      this.oneSignal.endInit();
+      // this.oneSignal.startInit("caf4c3c6-4b53-4f5b-93c3-410c868481d6", "167004169647");
+      //
+      // this.oneSignal.handleNotificationReceived().subscribe(() => {
+      //  // do something when notification is received
+      // });
+      //
+      // this.oneSignal.endInit();
         
     });
   }
