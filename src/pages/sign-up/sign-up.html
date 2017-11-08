@@ -7,12 +7,12 @@
 <ion-content padding>
   <ion-grid>
     <ion-row>
-      <ion-col col-2>
+      <ion-col col-1>
       </ion-col>
-      <ion-col col-8>
-        <img src="../../assets/images/logo.png" />
+      <ion-col col-10>
+        <img src="assets/images/logo.png" />
       </ion-col>
-      <ion-col col-2>
+      <ion-col col-1>
       </ion-col>
     </ion-row>
     <ion-col col-12>
@@ -54,8 +54,8 @@
             </div>
           </ion-item>
           <hr />
-          <button ion-button full round type="submit" [disabled]="!signUpForm.form.valid">Concluir cadastro</button>
-          <button ion-button full round type="button" (click)="backLoginPage()">Voltar para o login</button>
+          <button ion-button full type="submit" [disabled]="!signUpForm.form.valid">Concluir cadastro</button>
+          <button ion-button full type="button" (click)="backLoginPage()">Voltar para o login</button>
         </ion-list>
       </form>
     </ion-col>

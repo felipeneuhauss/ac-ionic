@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {AlertController, IonicPage, NavController} from 'ionic-angular';
+import { AlertController, Events, IonicPage, NavController, PopoverController } from 'ionic-angular';
 import {ApiProvider} from "../../providers/api/api";
 import {LoginPage} from "../login/login";
 import {AuthProvider} from "../../providers/auth/auth";
 import {StationDetailPage} from "../station-detail/station-detail";
+import { PopoverPage } from '../popover/popover';
 
 @IonicPage({
   name: 'home'
@@ -17,8 +18,8 @@ export class HomePage implements OnInit {
   stations: any = [];
   selectedStation: any = {};
 
-  constructor(public navCtrl: NavController, private api: ApiProvider,
-              public alertCtrl: AlertController, private auth: AuthProvider) {
+  constructor(public navCtrl: NavController, private api: ApiProvider, public popoverCtrl: PopoverController,
+              public alertCtrl: AlertController, private auth: AuthProvider, public events: Events) {
   }
 
   getStations() {
@@ -56,28 +57,37 @@ export class HomePage implements OnInit {
         {
           text: 'OK',
           handler: data => {
-            this.api.get('stations/' + this.selectedStation.id + '/check-password/' + data.password).subscribe(
-                (response) => {
-                  if (response.success) {
-                    localStorage.setItem('station-' + this.selectedStation.id + '-password', data.password);
-                    localStorage.setItem('station-' + this.selectedStation.id, this.selectedStation.id);
-                    this.navCtrl.push(StationDetailPage, {stationId: this.selectedStation.id});
-                    return;
-                  }
+            if (data.password && data.password !== "") {
+                this.api.get('stations/' + this.selectedStation.id + '/check-password/' + data.password).subscribe(
+                    (response) => {
+                    if (response.success) {
+                        localStorage.setItem('station-' + this.selectedStation.id + '-password', data.password);
+                        localStorage.setItem('station-' + this.selectedStation.id, this.selectedStation.id);
+                        this.navCtrl.setRoot(StationDetailPage, {stationId: this.selectedStation.id});
+                        return;
+                    }
 
-                  const alert = this.alertCtrl.create({
-                    title: 'Senha inválida',
-                    subTitle: 'Sua senha parece estar errada. Verifique se foi digitada corretamente.',
-                    buttons: ['Vou checar o password']
-                  });
-                  alert.present();
-                }
-            )
+                    const alert = this.alertCtrl.create({
+                        title: 'Senha inválida',
+                        subTitle: 'Sua senha parece estar errada. Verifique se foi digitada corretamente.',
+                        buttons: ['Vou checar o password']
+                    });
+                    alert.present();
+                })
+            }
           }
         }
       ]
     });
     prompt.present();
+  }
+
+  presentPopover(myEvent) {
+    let popover = this.popoverCtrl.create(PopoverPage);
+    popover.present({
+        ev: myEvent
+    });
+
   }
 
   ngOnInit(): void {
@@ -88,5 +98,9 @@ export class HomePage implements OnInit {
     if (!this.auth.getToken()) {
       this.navCtrl.setRoot(LoginPage);
     }
+
+    this.events.subscribe('logout', () => {
+
+    });
   }
 }

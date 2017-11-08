@@ -1,0 +1,17 @@
+<ion-grid>
+  <ion-row>
+    <ion-col text-left>{{reservoir.tracker}}º Reservatório</ion-col>
+    <ion-col text-right class="percent"> {{reservoir.level}}%</ion-col>
+  </ion-row>
+</ion-grid>
+<ion-grid>
+  <ion-row>
+    <ion-col>
+      <div class="level-outer">
+        <div class="level-inner" [style.height]="reservoir.level + '%'">
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</ion-grid>
+

@@ -16,11 +16,11 @@ import {LocalStorageProvider} from "../local-storage/local-storage";
 @Injectable()
 export class ApiProvider {
 
+    // public static baseUrl: string = 'http://ac-api.app/';
     public static baseUrl: string = 'http://api.aguacinza.eco.br/';
-    // public static baseUrl: string = 'https://ac-api-felipeneuhauss.c9users.io/';
 
+    // public static apiUrl: string = 'http://ac-api.app/api/';
     public static apiUrl: string = 'http://api.aguacinza.eco.br/api/';
-    // public static apiUrl: string = 'https://ac-api-felipeneuhauss.c9users.io/api/';
 
     private headers: Headers = new Headers();
 
@@ -64,22 +64,29 @@ export class ApiProvider {
             payload,
             options).toPromise().then((res: any) => {
             loader.dismiss();
-            this.extractData(res);
+            return this.extractData(res);
         }).catch(this.handleErrorObservable);
     }
 
-    login(username, password) {
+    login(username?: string, password?:string , uniqueToken?:string) {
         let payload: any = {
             client_id: 2,
             client_secret: 'czwwexj9iSEgvVjnB4p9nuYhzxSUQfG8DumThjUN',
-            grant_type: 'password',
-            username: username,
-            password: password
+            grant_type: 'custom_request'
         };
+
+        if (username && password) {
+            payload.username = username;
+            payload.password = password;
+        }
+
+        if (uniqueToken) {
+            payload.unique_token = uniqueToken;
+        }
 
         this.storage.set('user', payload);
 
-        return this.http.post(ApiProvider.baseUrl + '/oauth/token', payload)
+        return this.http.post(ApiProvider.baseUrl + 'oauth/token', payload)
             .toPromise().then(this.extractData).catch(this.handleErrorObservable);
     }
 

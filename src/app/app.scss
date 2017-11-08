@@ -37,13 +37,31 @@ ion-menu {
     }
 }
 
+.item-inner {
+  border-bottom: 0px !important;
+}
+
 .header {
-    background: white;
-    -webkit-box-shadow: 0 2px 6px 0px #c8c8c8;
-       -moz-box-shadow: 0 2px 6px 0px #c8c8c8;
-            box-shadow: 0 2px 6px 0px #c8c8c8;   
+  .toolbar-background {
+    background: #2AADC3 !important;
+  }
+  .toolbar-title, .icon {
+    color: white !important;
+  }
 }
 
 .scroll-content {
-    background:#ECECEC;
+  background: url('../assets/images/bg.jpg') no-repeat !important;
+}
+
+
+.tabbar {
+  background: #2AADC3 !important;
+  .icon {
+    color: white !important;
+  }
+
+  span {
+    color: white;
+  }
 }

@@ -5,30 +5,22 @@ import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
-import { LoginPage } from '../pages/login/login';
-import { SignUpPage } from '../pages/sign-up/sign-up';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { AuthProvider } from '../providers/auth/auth';
 import { ApiProvider } from '../providers/api/api';
 import { LoggerProvider } from '../providers/logger/logger';
-import { StationDetailPage } from "../pages/station-detail/station-detail";
 import { LocalStorageProvider } from '../providers/local-storage/local-storage';
-import {TouchID} from "@ionic-native/touch-id";
+import { TouchID } from "@ionic-native/touch-id";
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { OneSignal } from '@ionic-native/onesignal';
+import { Facebook } from '@ionic-native/facebook';
+import { TabsPageModule } from '../pages/tabs/tabs.module';
 
 @NgModule({
   declarations: [
-    MyApp,
-    HomePage,
-    ListPage,
-    LoginPage,
-    SignUpPage,
-    StationDetailPage
+    MyApp
   ],
   imports: [
     BrowserModule,
@@ -43,16 +35,12 @@ import { OneSignal } from '@ionic-native/onesignal';
       pageTransition: 'ios-transition'*/
     }),
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    TabsPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp,
-    HomePage,
-    ListPage,
-    LoginPage,
-    SignUpPage,
-    StationDetailPage
+    MyApp
   ],
   providers: [
     StatusBar,
@@ -65,7 +53,8 @@ import { OneSignal } from '@ionic-native/onesignal';
     LocalStorageProvider,
     TouchID,
     UniqueDeviceID,
-    OneSignal
+    OneSignal,
+    Facebook
   ]
 })
 export class AppModule {}

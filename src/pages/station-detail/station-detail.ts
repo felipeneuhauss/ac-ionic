@@ -26,6 +26,8 @@ export class StationDetailPage implements OnInit {
     stationId: number;
     lineChart: any;
     intervalLoadChart: any;
+    intervalLoadReservoirLevel: any;
+    reservoirs:any = [];
 
     constructor(public navCtrl: NavController, private auth: AuthProvider,
                 public navParams: NavParams, private api: ApiProvider, private storage: LocalStorageProvider) {
@@ -42,6 +44,14 @@ export class StationDetailPage implements OnInit {
                 this.setupChart(this.station.chart);
             }
         );
+    }
+
+    getReservoirLevel() {
+        this.api.get('reservoir-level/'+this.stationId).subscribe((response) => {
+            console.log('Call the reservoir-level', this.lineCanvas, response);
+            this.reservoirs = response;
+            console.log(this.reservoirs);
+        });
     }
 
     setupChart(chart) {
@@ -80,12 +90,16 @@ export class StationDetailPage implements OnInit {
     }
 
     ngAfterViewInit() {
+        console.log('ngAfterViewInit');
         this.intervalLoadChart = setInterval(()=> {
-           this.api.get('stations/'+this.stationId+'/chart').subscribe((response) => {
-               console.log('Call the chart', this.lineCanvas, response); 
-               this.setupChart(response);
-           });
-        }, 60000);
+            this.getStation();
+        }, 600000);
+
+        this.intervalLoadReservoirLevel = setInterval(()=> {
+            this.getReservoirLevel();
+        }, 600000);
+
+
         if (!this.auth.getToken()) {
             this.navCtrl.setRoot(LoginPage);
         }
@@ -93,10 +107,12 @@ export class StationDetailPage implements OnInit {
 
     ionViewDidLoad() {
         this.getStation();
+        this.getReservoirLevel();
     }
     
     ionViewDidLeave() {
         clearInterval(this.intervalLoadChart);
+        clearInterval(this.intervalLoadReservoirLevel);
         console.log('ionViewDidLeave');
     }
 

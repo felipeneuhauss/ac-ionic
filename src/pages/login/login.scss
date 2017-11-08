@@ -1,5 +1,5 @@
 page-login {
-  background-color: map-get($colors, backpage);
+  //background: url('../../assets/images/bg.jpg') no-repeat;
   /*
   .ng-valid[required], .ng-valid.required  {
     border-left: 5px solid #42A948;
@@ -9,16 +9,13 @@ page-login {
     border-left: 5px solid #a94442;
   }
   */
-  
+
   .grid {
      @include border-radius(3px);
      @include middle();
      background-color: white;
      padding:5px;
      font-size: 1em;
-     -webkit-box-shadow: 0 2px 6px 3px #c8c8c8;
-       -moz-box-shadow: 0 2px 6px 3px #c8c8c8;
-            box-shadow: 0 2px 6px 3px #c8c8c8;   
   }
   
   .item {

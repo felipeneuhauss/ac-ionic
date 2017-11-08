@@ -1,25 +1,28 @@
-<ion-menu [content]="content">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>Menu</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-nav [root]="rootPage"></ion-nav>
 
-  <ion-content>
-    <ion-list>
-      <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
-      </button>
-      <button (tap)="saveTouchId()" ion-item>
-        Ativar Touch ID {{touchIdResponse}}
-      </button>
-      <button menuClose ion-item (click)="logout()">
-        Sair
-      </button>
-    </ion-list>
-  </ion-content>
 
-</ion-menu>
+<!--<ion-menu [content]="content">-->
+  <!--<ion-header>-->
+    <!--<ion-toolbar>-->
+      <!--<ion-title>Menu</ion-title>-->
+    <!--</ion-toolbar>-->
+  <!--</ion-header>-->
 
-<!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
-<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+  <!--<ion-content>-->
+    <!--<ion-list>-->
+      <!--<button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">-->
+        <!--{{p.title}}-->
+      <!--</button>-->
+      <!--&lt;!&ndash;<button (tap)="saveTouchId()" ion-item>&ndash;&gt;-->
+        <!--&lt;!&ndash;Ativar Touch ID {{touchIdResponse}}&ndash;&gt;-->
+      <!--&lt;!&ndash;</button>&ndash;&gt;-->
+      <!--<button menuClose ion-item (click)="logout()">-->
+        <!--Sair-->
+      <!--</button>-->
+    <!--</ion-list>-->
+  <!--</ion-content>-->
+
+<!--</ion-menu>-->
+
+<!--&lt;!&ndash; Disable swipe-to-go-back because it's poor UX to combine STGB with side menus &ndash;&gt;-->
+<!--<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>-->

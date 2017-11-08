@@ -21,7 +21,7 @@
           <img src="{{station.picture}}">
         </ion-thumbnail>
         <h2>{{station.enterprise}}</h2>
-        <p>{{station.address}}</p>
+        <p>{{station.location}} • {{station.address}}</p>
       </ion-item>
       <ion-item><ion-icon name="analytics" item-start></ion-icon>{{station.summary.total}} litros até hoje</ion-item>
       <ion-item><ion-icon name="beaker" item-start></ion-icon>{{station.summary.total_m3}} até hoje</ion-item>
@@ -35,6 +35,15 @@
     </ion-card-header>
     <ion-card-content >
       <canvas #lineCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      Nível do(s) reservatório(s)
+    </ion-card-header>
+    <ion-card-content>
+      <reservoir-level *ngFor="let reservoir of reservoirs" [reservoir]="reservoir"></reservoir-level>
     </ion-card-content>
   </ion-card>
 </ion-content>

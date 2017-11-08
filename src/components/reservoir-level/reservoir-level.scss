@@ -1,0 +1,42 @@
+reservoir-level {
+  .level-outer {
+    width: 100%;
+    padding: 3px;
+    text-align: center;
+    background-color: #f4f4f4;
+    border: 1px solid #dcdcdc;
+    color: #fff;
+    border-radius: 3px;
+    height: 100px;
+
+    display: -webkit-inline-flex;
+    display: -moz-inline-flex;
+    display: inline-flex;
+
+    -webkit-flex-flow: row nowrap;
+    -moz-flex-flow: row nowrap;
+    flex-flow: row nowrap;
+
+    -webkit-align-items: flex-end;
+    -moz-align-items: flex-end;
+    align-items: flex-end;
+  }
+
+  .level-inner {
+    min-width: 15%;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: map-get($colors, primary);
+    width: 100%;
+  }
+
+  .grid {
+    padding:0px;
+  }
+
+  .percent {
+    font-weight: 800;
+  }
+}
