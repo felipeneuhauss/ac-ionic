@@ -1,9 +1,14 @@
 page-home {
     .item {
-        padding-right:16px;
+        //padding-right:16px;
+        border-bottom: 1px #c8c7cc solid;
     }
     
     h2 {
-        font-size:.95em !important;
+        font-size:.85em !important;
+    }
+
+    .icon {
+        color: white;
     }
 }

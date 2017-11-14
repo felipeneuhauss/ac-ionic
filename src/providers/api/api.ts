@@ -87,7 +87,9 @@ export class ApiProvider {
         this.storage.set('user', payload);
 
         return this.http.post(ApiProvider.baseUrl + 'oauth/token', payload)
-            .toPromise().then(this.extractData).catch(this.handleErrorObservable);
+            .toPromise().then((res) => {
+                return this.extractLoginData(res);
+            }).catch(this.handleErrorObservable);
     }
 
     register(payload) {
@@ -95,6 +97,12 @@ export class ApiProvider {
             .map((response: any) => {
                 return response.json();
             });
+    }
+
+    extractLoginData(res) {
+        res = this.extractData(res);
+        this.auth.setToken(res.access_token, res.expires_in + Date.now());
+        return this.auth.hasToken();
     }
 
     private extractData(res: Response) {

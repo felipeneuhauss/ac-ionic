@@ -5,7 +5,7 @@
     </button>
     <ion-title>Condomínios</ion-title>
     <ion-buttons right>
-      <button ion-button clear icon-only (tap)="presentPopover($event)">
+      <button ion-button clear icon-only (click)="presentPopover($event)">
         <ion-icon color="dark" name="more"></ion-icon>
       </button>
     </ion-buttons>
@@ -14,13 +14,22 @@
 
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let station of stations" (click)="selectStation(station)">
-      <ion-thumbnail item-start>
-        <img src="{{station.picture}}">
-      </ion-thumbnail>
-      <h2>{{station.enterprise}}</h2>
-      <p>{{station.location}} • {{station.summary.total}} litros</p>
-      <!--<button ion-button clear item-end >Ver</button>-->
-    </ion-item>
+    <ion-item-sliding *ngFor="let station of stations">
+      <ion-item (tap)="selectStation(station)">
+        <ion-thumbnail item-start>
+          <img-loader src="{{station.picture}}" useImg></img-loader>
+        </ion-thumbnail>
+        <h2>{{station.enterprise}}</h2>
+        <p>{{station.location}} • {{station.summary.total}} litros</p>
+        <!--<button ion-button clear item-end >Ver</button>-->
+      </ion-item>
+
+      <ion-item-options side="right">
+        <button ion-button (tap)="accessMap(station)">
+          <ion-icon name="map"></ion-icon>
+          MAPA
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
   </ion-list>
 </ion-content>

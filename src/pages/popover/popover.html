@@ -1,4 +1,2 @@
-<ion-list>
-  <button ion-item (tap)="registerTouchID()">Touch ID</button>
-  <button ion-item (tap)="logout()">Sair</button>
-</ion-list>
+<button ion-item (click)="registerTouchID()" *ngIf="showTouchIdOption">Touch ID</button>
+<button ion-item (click)="logout()">Sair</button>

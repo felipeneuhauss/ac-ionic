@@ -7,8 +7,7 @@
 <ion-header *ngIf="station">
 
   <ion-navbar>
-    <ion-title>
-      Estação {{station.enterprise}}</ion-title>
+    <ion-title>{{station.enterprise}}</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -31,14 +30,22 @@
   </ion-card>
   <ion-card>
     <ion-card-header>
-      Gráfico de consumo em (m³)
+      Consumo - Mêses
     </ion-card-header>
     <ion-card-content >
       <canvas #lineCanvas></canvas>
     </ion-card-content>
   </ion-card>
-
   <ion-card>
+    <ion-card-header>
+      Consumo - Últimos 30 dias
+    </ion-card-header>
+    <ion-card-content >
+      <canvas #monthlyLineCanvas></canvas>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="reservoirs?.length">
     <ion-card-header>
       Nível do(s) reservatório(s)
     </ion-card-header>
