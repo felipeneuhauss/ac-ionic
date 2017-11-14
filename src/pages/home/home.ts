@@ -5,6 +5,8 @@ import {LoginPage} from "../login/login";
 import {AuthProvider} from "../../providers/auth/auth";
 import {StationDetailPage} from "../station-detail/station-detail";
 import { PopoverPage } from '../popover/popover';
+import { ImageLoaderConfig } from 'ionic-image-loader';
+import { LaunchNavigator, LaunchNavigatorOptions } from '@ionic-native/launch-navigator';
 
 @IonicPage({
   name: 'home'
@@ -19,7 +21,10 @@ export class HomePage implements OnInit {
   selectedStation: any = {};
 
   constructor(public navCtrl: NavController, private api: ApiProvider, public popoverCtrl: PopoverController,
-              public alertCtrl: AlertController, private auth: AuthProvider, public events: Events) {
+              public alertCtrl: AlertController, private auth: AuthProvider, public events: Events,
+              private imageLoaderConfig: ImageLoaderConfig, private launchNavigator: LaunchNavigator) {
+
+      this.imageLoaderConfig.enableDebugMode();
   }
 
   getStations() {
@@ -102,5 +107,17 @@ export class HomePage implements OnInit {
     this.events.subscribe('logout', () => {
 
     });
+  }
+
+  accessMap (station) {
+    let options: LaunchNavigatorOptions = {
+    };
+
+
+    this.launchNavigator.navigate([station.lat, station.lng], options)
+      .then(
+          (success) => console.log('Launched navigator', success),
+          (error) => console.log('Error launching navigator', error)
+      );
   }
 }

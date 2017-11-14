@@ -92,5 +92,12 @@
         <variable name="APP_ID" value="157442668178002" />
         <variable name="APP_NAME" value="Água Cinza" />
     </plugin>
+    <plugin name="cordova-plugin-file" spec="~4.3.3" />
+    <plugin name="cordova-plugin-file-transfer" spec="~1.6.3" />
+    <plugin name="cordova-plugin-cocoapod-support" spec="~1.3.0" />
     <engine name="ios" spec="~4.3.1" />
+    <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="~4.0.7">
+        <variable name="LOCATION_USAGE_DESCRIPTION" value="This app requires access to your location for navigation purposes" />
+    </plugin>
+    <engine name="android" spec="~6.1.2" />
 </widget>

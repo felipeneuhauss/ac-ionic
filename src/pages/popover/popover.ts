@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { LoginPage } from '../login/login';
 import { AuthProvider } from '../../providers/auth/auth';
 import { TouchID } from '@ionic-native/touch-id';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { ApiProvider } from '../../providers/api/api';
+import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
 
 /**
  * Generated class for the PopoverPage page.
@@ -18,14 +19,28 @@ import { ApiProvider } from '../../providers/api/api';
   selector: 'page-popover',
   templateUrl: 'popover.html',
 })
-export class PopoverPage {
+export class PopoverPage implements OnInit {
 
-  event: Event
+  event: Event;
+
+  showTouchIdOption: boolean = false;
 
   constructor(public navCtrl: NavController, public navParams: NavParams,
               private auth: AuthProvider, public viewCtrl: ViewController,
               private touchId: TouchID, private uniqueDeviceID: UniqueDeviceID,
-              private alertCtrl: AlertController, private api: ApiProvider) {
+              private alertCtrl: AlertController, private api: ApiProvider,
+              private storage: LocalStorageProvider) {
+  }
+
+  ngOnInit() {
+      this.touchId.isAvailable()
+          .then((res) => {
+                this.showTouchIdOption = true;
+            },(err) => {
+              this.showTouchIdOption = true;
+            }
+          );
+
   }
 
   ionViewDidLoad() {
@@ -38,17 +53,28 @@ export class PopoverPage {
           (res) => {
               this.uniqueDeviceID.get()
                   .then((uuid: any) => {
-                      console.log('uuid', uuid)
+                      console.log('uuid', uuid);
                       this.api.post('register-touch-id',
-                          {username: this.auth.user().username, touch_id: uuid}).then(
+                          {username: this.auth.user().username, unique_token: uuid}).then(
                           (res) => {
-                              console.log('Ok, finger print saved');
-                              const alert = this.alertCtrl.create({
-                                  title: 'Sucesso!',
-                                  subTitle: 'Touch ID vinculado com sucesso!',
-                                  buttons: ['OK']
-                              });
-                              alert.present();
+                              console.log('Ok, finger print saved', res);
+                              if (res.success) {
+                                  const alert = this.alertCtrl.create({
+                                      title: 'Sucesso!',
+                                      subTitle: 'Touch ID vinculado com sucesso!',
+                                      buttons: ['OK']
+                                  });
+                                  alert.present();
+                                  this.storage.set('hasTouchId', true);
+                                  this.close();
+                              } else {
+                                  const alert = this.alertCtrl.create({
+                                      title: 'Ops!',
+                                      subTitle: 'Tivemos problemas em vincular seu Touch ID!',
+                                      buttons: ['OK']
+                                  });
+                                  alert.present();
+                              }
                           });
                   })
                   .catch((error: any) => console.log(error));

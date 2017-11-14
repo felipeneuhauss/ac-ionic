@@ -21,10 +21,12 @@ import {Chart} from 'chart.js';
 export class StationDetailPage implements OnInit {
 
     @ViewChild('lineCanvas') lineCanvas;
+    @ViewChild('monthlyLineCanvas') monthlyLineCanvas;
 
     station: any = {};
     stationId: number;
     lineChart: any;
+    monthlyLineChart: any;
     intervalLoadChart: any;
     intervalLoadReservoirLevel: any;
     reservoirs:any = [];
@@ -42,15 +44,14 @@ export class StationDetailPage implements OnInit {
                 console.log(this.station);
                 this.storage.set(this.stationId + '-station', this.station);
                 this.setupChart(this.station.chart);
+                this.setupMonthlyChart(this.station.monthlyChart);
             }
         );
     }
 
     getReservoirLevel() {
         this.api.get('reservoir-level/'+this.stationId).subscribe((response) => {
-            console.log('Call the reservoir-level', this.lineCanvas, response);
             this.reservoirs = response;
-            console.log(this.reservoirs);
         });
     }
 
@@ -89,15 +90,49 @@ export class StationDetailPage implements OnInit {
         });
     }
 
+    setupMonthlyChart(monthlyChart) {
+        this.monthlyLineChart = new Chart(this.monthlyLineCanvas.nativeElement, {
+            type: 'line',
+            data: {
+                labels: monthlyChart.labels,
+                datasets: [
+                    {
+                        label: "(m³)",
+                        fill: false,
+                        lineTension: 0.1,
+                        backgroundColor: "rgba(75,192,192,0.4)",
+                        borderColor: "rgba(75,192,192,1)",
+                        borderCapStyle: 'butt',
+                        borderDash: [],
+                        borderDashOffset: 0.0,
+                        borderJoinStyle: 'miter',
+                        pointBorderColor: "rgba(75,192,192,1)",
+                        pointBackgroundColor: "#fff",
+                        pointBorderWidth: 1,
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                        pointHoverBorderColor: "rgba(220,220,220,1)",
+                        pointHoverBorderWidth: 2,
+                        pointRadius: 1,
+                        pointHitRadius: 10,
+                        data: monthlyChart.data[0],
+                        spanGaps: false,
+                    }
+                ]
+            }
+
+        });
+    }
+
     ngAfterViewInit() {
         console.log('ngAfterViewInit');
         this.intervalLoadChart = setInterval(()=> {
             this.getStation();
-        }, 600000);
+        }, 60000);
 
         this.intervalLoadReservoirLevel = setInterval(()=> {
             this.getReservoirLevel();
-        }, 600000);
+        }, 60000);
 
 
         if (!this.auth.getToken()) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {
     IonicPage, NavController, NavParams, AlertController,
     LoadingController, Platform
@@ -12,6 +12,8 @@ import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
 import { HomePage } from "../home/home";
 import { SignUpPage } from "../sign-up/sign-up";
 import { TouchID } from "@ionic-native/touch-id";
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
+import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
 
 /**
  * Generated class for the LoginPage page.
@@ -27,15 +29,17 @@ import { TouchID } from "@ionic-native/touch-id";
     templateUrl: 'login.html',
     selector: 'page-login'
 })
-export class LoginPage implements OnInit {
+export class LoginPage {
 
     form: any = {email: '', password: ''};
 
-    showTouchIdButton: boolean = false;
+    public showTouchIdButton: boolean = false;
 
     constructor(public navCtrl: NavController, public navParams: NavParams, public loading: LoadingController,
                 private auth: AuthProvider, private api: ApiProvider, private logger: LoggerProvider, public platform: Platform,
-                private touchId: TouchID, private alertCtrl: AlertController, private fb: Facebook) {
+                private touchId: TouchID, private alertCtrl: AlertController, private fb: Facebook,
+                private uniqueDeviceID: UniqueDeviceID, private storage: LocalStorageProvider) {
+        console.log('constructor LoginPage');
     }
 
     login(res? : any) {
@@ -43,15 +47,16 @@ export class LoginPage implements OnInit {
         let loader = this.loading.create({
             content: 'Aguarde...'
         });
+        loader.present();
 
         let email = res ? res.email : this.form.email;
         let password = res ? res.password : this.form.password;
 
-        loader.present();
         this.api.login(email, password).then(
             (response: any) => {
-                this.auth.setToken(response.access_token, response.expires_in + Date.now());
-                this.navCtrl.setRoot(HomePage);
+                if (response) {
+                    this.navCtrl.setRoot(HomePage);
+                }
                 loader.dismiss();
             }, (error: any) => {
                 const alert = this.alertCtrl.create({
@@ -94,26 +99,50 @@ export class LoginPage implements OnInit {
 
     signInWithTouchId() {
         this.touchId.verifyFingerprint('Desbloquear usando o Touch ID').then((res) => {
-
+            let loader = this.loading.create({
+                content: 'Aguarde...'
+            });
+            loader.present();
+            this.uniqueDeviceID.get()
+                .then((uuid: any) => {
+                    console.log('uuid', uuid);
+                    loader.dismiss();
+                    this.api.login(null, null, uuid).then((res) => {
+                        if (res) {
+                            this.navCtrl.setRoot(HomePage);
+                        }
+                    });
+                })
+                .catch((error: any) => {
+                    loader.dismiss();
+                    const alert = this.alertCtrl.create({
+                        title: 'Atenção',
+                        subTitle: 'Não foi possível fazer o login com o Touch ID.',
+                        buttons: ['Tudo bem']
+                    });
+                    alert.present();
+                    console.log(error)
+                });
         });
     }
 
-    ionViewDidLoad() {
-        console.log('ionViewDidLoad LoginPage');
-    }
-
     ngAfterViewInit() {
-        console.log('ngAfterViewInit', this.auth.getToken());
         if (this.auth.getToken()) {
             this.navCtrl.setRoot(HomePage);
         }
-    }
 
-    ngOnInit() {
         if (this.platform.is('cordova')) {
-            this.touchId.isAvailable().then(() => {
+            this.touchId.isAvailable().then((res) => {
+                console.log('Touch ID available');
                 this.showTouchIdButton = true;
+                if (this.storage.get('hasTouchId')) {
+                    this.signInWithTouchId();
+                }
+            }, (err) =>{
+                console.log('Touch ID is not available');
+                this.showTouchIdButton = false;
             });
         }
     }
+
 }

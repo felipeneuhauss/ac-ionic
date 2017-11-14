@@ -3,6 +3,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { HttpModule } from '@angular/http';
 import { FormsModule, ReactiveFormsModule }   from '@angular/forms';
+import { IonicImageLoader } from 'ionic-image-loader';
 
 import { MyApp } from './app.component';
 
@@ -17,6 +18,7 @@ import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { OneSignal } from '@ionic-native/onesignal';
 import { Facebook } from '@ionic-native/facebook';
 import { TabsPageModule } from '../pages/tabs/tabs.module';
+import { LaunchNavigator } from '@ionic-native/launch-navigator';
 
 @NgModule({
   declarations: [
@@ -34,6 +36,7 @@ import { TabsPageModule } from '../pages/tabs/tabs.module';
       tabsPlacement: 'bottom',
       pageTransition: 'ios-transition'*/
     }),
+    IonicImageLoader.forRoot(),
     FormsModule,
     ReactiveFormsModule,
     TabsPageModule
@@ -54,7 +57,8 @@ import { TabsPageModule } from '../pages/tabs/tabs.module';
     TouchID,
     UniqueDeviceID,
     OneSignal,
-    Facebook
+    Facebook,
+    LaunchNavigator
   ]
 })
 export class AppModule {}
