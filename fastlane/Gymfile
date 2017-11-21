@@ -1,0 +1,4 @@
+scheme "Água Cinza" # Scheme of your native app, just the Name from config.xml
+workspace "../ac-ionic/platforms/ios/Água Cinza.xcworkspace" # Should be the path to the iOS project
+output_directory "./build" # Where the app will be build to
+output_name "Água Cinza" # Final output for the IPA

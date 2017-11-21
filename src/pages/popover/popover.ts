@@ -6,6 +6,7 @@ import { TouchID } from '@ionic-native/touch-id';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { ApiProvider } from '../../providers/api/api';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { TokenManagerProvider } from '../../providers/token-manager/token-manager';
 
 /**
  * Generated class for the PopoverPage page.
@@ -29,7 +30,7 @@ export class PopoverPage implements OnInit {
               private auth: AuthProvider, public viewCtrl: ViewController,
               private touchId: TouchID, private uniqueDeviceID: UniqueDeviceID,
               private alertCtrl: AlertController, private api: ApiProvider,
-              private storage: LocalStorageProvider) {
+              private storage: LocalStorageProvider, private tokenManager: TokenManagerProvider) {
   }
 
   ngOnInit() {
@@ -95,7 +96,7 @@ export class PopoverPage implements OnInit {
 
   logout() {
     this.close();
-    this.auth.destroyToken();
+    this.tokenManager.destroyToken();
     this.navCtrl.setRoot(LoginPage);
   }
 

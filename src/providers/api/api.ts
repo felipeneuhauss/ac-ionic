@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {Http, Response, Headers, RequestOptions} from '@angular/http';
 import 'rxjs/add/operator/map';
-import {AuthProvider} from "../auth/auth";
 import {Observable} from "rxjs/Observable";
 import 'rxjs/add/operator/toPromise';
 import {LoadingController} from "ionic-angular";
-import {LocalStorageProvider} from "../local-storage/local-storage";
+import { TokenManagerProvider } from '../token-manager/token-manager';
+
+export const BASE_URL = 'http://api.aguacinza.eco.br/';
+export const API_URL = BASE_URL + 'api/';
 
 /*
  Generated class for the ApiProvider provider.
@@ -16,23 +18,26 @@ import {LocalStorageProvider} from "../local-storage/local-storage";
 @Injectable()
 export class ApiProvider {
 
-    // public static baseUrl: string = 'http://ac-api.app/';
-    public static baseUrl: string = 'http://api.aguacinza.eco.br/';
-
-    // public static apiUrl: string = 'http://ac-api.app/api/';
-    public static apiUrl: string = 'http://api.aguacinza.eco.br/api/';
-
     private headers: Headers = new Headers();
 
     constructor(private http: Http,
-                private auth: AuthProvider, public loading: LoadingController,
-    private storage: LocalStorageProvider) {
+                private tokenManager: TokenManagerProvider,
+                public loading: LoadingController) {
+        this.initializeApi();
+        console.log('ApiProvider');
+    }
 
+    initializeApi() {
+        if (this.tokenManager.hasToken()) {
+            this.tokenManager.getToken().then((token) => {
+                if (token) {
+                    this.headers.set('Authorization', 'Bearer ' + token);
+                }
+            })
+        }
     }
 
     get(url: string = '', loadingMessage: string = 'Aguarde...') {
-
-        this.setAuthorization();
 
         let loader = this.loading.create({
             content: loadingMessage
@@ -42,7 +47,7 @@ export class ApiProvider {
 
         let options = new RequestOptions({headers: this.headers});
 
-        return this.http.get(ApiProvider.apiUrl + url,
+        return this.http.get(API_URL + url,
             options).map((res: Response) => {
                 loader.dismiss();
                 return res.json()
@@ -51,8 +56,6 @@ export class ApiProvider {
 
     post(url: string = '', payload: object = {}, loadingMessage: string = 'Aguarde...') {
 
-        this.setAuthorization();
-
         let loader = this.loading.create({
             content: loadingMessage
         });
@@ -60,7 +63,7 @@ export class ApiProvider {
 
         let options = new RequestOptions({headers: this.headers});
 
-        return this.http.post(ApiProvider.apiUrl + url,
+        return this.http.post(API_URL + url,
             payload,
             options).toPromise().then((res: any) => {
             loader.dismiss();
@@ -68,42 +71,6 @@ export class ApiProvider {
         }).catch(this.handleErrorObservable);
     }
 
-    login(username?: string, password?:string , uniqueToken?:string) {
-        let payload: any = {
-            client_id: 2,
-            client_secret: 'czwwexj9iSEgvVjnB4p9nuYhzxSUQfG8DumThjUN',
-            grant_type: 'custom_request'
-        };
-
-        if (username && password) {
-            payload.username = username;
-            payload.password = password;
-        }
-
-        if (uniqueToken) {
-            payload.unique_token = uniqueToken;
-        }
-
-        this.storage.set('user', payload);
-
-        return this.http.post(ApiProvider.baseUrl + 'oauth/token', payload)
-            .toPromise().then((res) => {
-                return this.extractLoginData(res);
-            }).catch(this.handleErrorObservable);
-    }
-
-    register(payload) {
-        return this.http.post(ApiProvider.baseUrl + '/api/register-user', payload)
-            .map((response: any) => {
-                return response.json();
-            });
-    }
-
-    extractLoginData(res) {
-        res = this.extractData(res);
-        this.auth.setToken(res.access_token, res.expires_in + Date.now());
-        return this.auth.hasToken();
-    }
 
     private extractData(res: Response) {
         let body = res.json();
@@ -115,9 +82,4 @@ export class ApiProvider {
         return Observable.throw(error.message || error);
     }
 
-    private setAuthorization() {
-        if (this.auth.hasToken() && this.auth.getToken()) {
-            this.headers.set('Authorization', 'Bearer ' + this.auth.getToken());
-        }
-    }
 }

@@ -27,10 +27,6 @@ export class MyApp {
               private oneSignal: OneSignal
   ) {
 
-    if (!this.auth.getToken()) {
-        this.rootPage = LoginPage;
-        return;
-    }
     this.initializeApp();
   }
 
@@ -41,30 +37,49 @@ export class MyApp {
       this.statusBar.styleDefault();
       this.splashScreen.hide();
 
-      this.touchId.isAvailable()
-      .then(
-          (res) => {
-              this.touchAvailable = true;
-              console.log('TouchID is available!', res);
-          },(err) => {
-              this.touchAvailable = false;
-              console.error('TouchID is not available', err);
-          }
-      );
 
-      if (this.platform.is('cordova')) {
-         this.oneSignal.startInit("caf4c3c6-4b53-4f5b-93c3-410c868481d6", "167004169647");
-        // //
-         this.oneSignal.handleNotificationReceived().subscribe(() => {
-        //   // do something when notification is received
-         });
-        //
-         this.oneSignal.endInit();
-      }
+      this.choiceLoginOrHome().then((home) => {
+         this.rootPage = home;
+      }, (login) => {
+         this.rootPage = login;
+      });
+
+      //
+      // this.tokenManager.getToken().then((token) => {
+      //     if (token) {
+      //       this.rootPage = LoginPage;
+      //     }
+      // })
+
+      this.initializeTouchId();
+
+      this.initializePush();
     });
   }
 
-  // openPage(page) {
+    choiceLoginOrHome() {
+      return new Promise((resolve, reject) => {
+         this.auth.isLogged().then((user) => {
+             resolve(HomePage);
+         }, (error) => {
+             reject(LoginPage);
+         });
+      });
+    }
+
+    private initializePush() {
+        if (this.platform.is('cordova')) {
+            this.oneSignal.startInit("caf4c3c6-4b53-4f5b-93c3-410c868481d6", "167004169647");
+            // //
+            this.oneSignal.handleNotificationReceived().subscribe(() => {
+                //   // do something when notification is received
+            });
+            //
+            this.oneSignal.endInit();
+        }
+    }
+
+// openPage(page) {
   //   // Reset the content nav to have just this page
   //   // we wouldn't want the back button to show in this scenario
   //   this.nav.setRoot(page.component);
@@ -81,4 +96,16 @@ export class MyApp {
   //
   //
 
+    private initializeTouchId() {
+        this.touchId.isAvailable()
+            .then(
+                (res) => {
+                    this.touchAvailable = true;
+                    console.log('TouchID is available!', res);
+                },(err) => {
+                    this.touchAvailable = false;
+                    console.error('TouchID is not available', err);
+                }
+            );
+    }
 }

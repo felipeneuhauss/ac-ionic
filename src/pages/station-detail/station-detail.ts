@@ -5,6 +5,7 @@ import {AuthProvider} from "../../providers/auth/auth";
 import {LoginPage} from "../login/login";
 import {LocalStorageProvider} from "../../providers/local-storage/local-storage";
 import {Chart} from 'chart.js';
+import { TokenManagerProvider } from '../../providers/token-manager/token-manager';
 
 /**
  * Generated class for the StationDetailPage page.
@@ -31,7 +32,7 @@ export class StationDetailPage implements OnInit {
     intervalLoadReservoirLevel: any;
     reservoirs:any = [];
 
-    constructor(public navCtrl: NavController, private auth: AuthProvider,
+    constructor(public navCtrl: NavController, private tokenManager: TokenManagerProvider,
                 public navParams: NavParams, private api: ApiProvider, private storage: LocalStorageProvider) {
         this.stationId = navParams.get('stationId');
         console.log('station-id', this.stationId);
@@ -41,7 +42,6 @@ export class StationDetailPage implements OnInit {
         this.api.get('stations/' + this.stationId).subscribe(
             (response: any) => {
                 this.station = response;
-                console.log(this.station);
                 this.storage.set(this.stationId + '-station', this.station);
                 this.setupChart(this.station.chart);
                 this.setupMonthlyChart(this.station.monthlyChart);
@@ -135,7 +135,7 @@ export class StationDetailPage implements OnInit {
         }, 60000);
 
 
-        if (!this.auth.getToken()) {
+        if (!this.tokenManager.getToken()) {
             this.navCtrl.setRoot(LoginPage);
         }
     }

@@ -1,7 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import {LocalStorageProvider} from "../local-storage/local-storage";
+import { LocalStorageProvider } from "../local-storage/local-storage";
+import { Facebook } from '@ionic-native/facebook';
+import { API_URL, BASE_URL } from '../api/api';
+import { LoadingController, AlertController } from 'ionic-angular';
+import { TokenManagerProvider } from '../token-manager/token-manager';
+import { TouchID } from '@ionic-native/touch-id';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id';
+
+export enum USER_TYPE {
+    NORMAL_USER,
+    FACEBOOK_USER,
+    TOUCH_ID_USER
+}
 
 /*
   Generated class for the AuthProvider provider.
@@ -12,58 +24,174 @@ import {LocalStorageProvider} from "../local-storage/local-storage";
 @Injectable()
 export class AuthProvider {
 
-  public static baseUrl : string = 'http://api.aguacinza.eco.br';
+    public static baseUrl: string = 'http://api.aguacinza.eco.br';
 
-  constructor(public http: Http, private storage: LocalStorageProvider) {
-    console.log('Hello AuthProvider Provider');
-  }
-
-  setToken(token: string, expiration: any) {
-    this.storage.set('token', token);
-    this.storage.set('expiration', expiration);
-  }
-
-  hasToken() {
-    var token = this.storage.get('token');
-    var expiration = this.storage.get('expiration');
-    if (token === undefined || !token || !expiration || token == 'undefined') {
-      return false;
+    constructor(public http: Http, private storage: LocalStorageProvider,
+                private loading: LoadingController, private alert: AlertController,
+                private fb: Facebook, private tokenManager: TokenManagerProvider,
+                private uniqueDeviceID: UniqueDeviceID,
+                private touchId: TouchID
+                ) {
+        console.log('Hello AuthProvider Provider');
     }
 
-    return true;
-  }
 
-  getToken() {
-    var token = this.storage.get('token');
-    var expiration = this.storage.get('expiration');
+    login(username?: string, password?: string, uniqueToken?: string): Promise<any> {
 
-    if (token === undefined || !token || !expiration || token == 'undefined') {
-      return null;
+        let loader = this.loading.create({
+            content: 'Aguarde...'
+        });
+        loader.present();
+
+        let payload: any = {
+            client_id: 2,
+            client_secret: 'czwwexj9iSEgvVjnB4p9nuYhzxSUQfG8DumThjUN',
+            grant_type: 'custom_request'
+        };
+
+        if (username && password) {
+            payload.username = username;
+            payload.password = password;
+        }
+
+        if (uniqueToken) {
+            payload.unique_token = uniqueToken;
+        }
+
+        return new Promise((resolve, reject) => {
+            this.http.post(BASE_URL + 'oauth/token', payload)
+            .toPromise().then((res) => {
+                loader.dismiss();
+                let auth = this.extractLoginData(res);
+                if (auth.access_token) {
+                    resolve(auth);
+                    return;
+                }
+
+                reject(null);
+            }).catch((error) => {
+                loader.dismiss();
+                reject(error);
+            });
+        })
     }
 
-    if (Date.now() > parseInt(expiration)) {
-      this.destroyToken();
-      let user: any = this.storage.get('user');
-      if (user) {
-        this.http.post(AuthProvider.baseUrl + '/oauth/token', user).subscribe(
-            (response: any) => {
-              this.setToken(response.access_token, response.expires_in + Date.now());
-              return response.access_token;
-            }
-        );
-      }
-    } else {
-      return token;
+    register(payload) {
+        let loader = this.loading.create({
+            content: 'Aguarde...'
+        });
+        loader.present();
+
+        let alertSuccess = this.alert.create({
+            title: 'Sucesso',
+            subTitle: 'Cadastro realizado com sucesso',
+            buttons: ['Ok']
+        });
+
+        return this.http.post(API_URL + 'register-user', payload)
+            .map((response: any) => {
+                loader.dismiss();
+                alertSuccess.present();
+                return response.json();
+            });
     }
-  }
 
-  destroyToken() {
-    this.storage.remove('token');
-    this.storage.remove('expiration');
-  }
+    defaultLogin(username: string, password: string): Promise<any> {
+
+        this.storage.set('user_type', USER_TYPE.NORMAL_USER);
+
+        return new Promise((resolve) => {
+            resolve(this.login(username, password));
+        })
+
+    }
+
+    touchIdLogin(): Promise<any> {
+
+        this.storage.set('user_type', USER_TYPE.TOUCH_ID_USER);
+
+        return new Promise((resolve, reject) => {
+            this.touchId.verifyFingerprint('Desbloquear usando o Touch ID').then((res) => {
+                this.uniqueDeviceID.get()
+                    .then((uuid: any) => {
+                        this.login(null, null, uuid).then((res) => {
+                            resolve(res);
+                        }, (error) => {
+                            reject(error);
+                        });
+                    })
+                    .catch((error: any) => {
+                        const alert = this.alert.create({
+                            title: 'Atenção',
+                            subTitle: 'Não foi possível fazer o login com o Touch ID.',
+                            buttons: ['Tudo bem']
+                        });
+                        alert.present();
+                        console.log(error)
+                        reject(error);
+                    });
+            });
+        });
+    }
+
+    private refreshTouchIdAuthentication(): Promise<any> {
+        return new Promise((resolve, reject) => {
+          this.touchIdLogin().then((res) => {
+                console.log('refreshTouchLogin', res);
+                resolve(res);
+            }, (error) => {
+                reject(error);
+            });
+        })
+    }
+
+    extractLoginData(res) {
+        res = this.extractData(res);
+        this.tokenManager.setToken(res.access_token, res.expires_in + Date.now());
+        return res;
+    }
+
+    isLogged(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.tokenManager.getToken().then((token) => {
+                if (token) {
+                    resolve(true);
+                } else {
+                    this.refreshToken().then((user?: string, password?: string, uuid?: string) => {
+                        this.login(user, password, uuid).then((user: any) => {
+                            resolve(user);
+                        }, (error) => {
+                            reject(error);
+                        });
+                    });
+                }
+            })
+        });
+    }
+
+    refreshToken(): Promise<any> {
+        console.log('userType', this.storage.get('userType'));
+        if(this.storage.get('userType') === USER_TYPE.TOUCH_ID_USER) {
+            return this.refreshTouchIdAuthentication();
+        }
+
+        if(this.storage.get('userType') === USER_TYPE.FACEBOOK_USER) {
+            // return this.refreshFacebookAuthentication();
+        }
+
+        return new Promise((resolve) => {
+            resolve();
+        });
+    }
+
+    user() {
+        return this.storage.get('user');
+    }
+
+    private extractData(res: Response) {
+        let body = res.json();
+        return body || {};
+    }
 
 
-  user() {
-    return this.storage.get('user');
-  }
 }

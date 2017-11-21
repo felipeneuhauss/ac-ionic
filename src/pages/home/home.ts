@@ -68,7 +68,7 @@ export class HomePage implements OnInit {
                     if (response.success) {
                         localStorage.setItem('station-' + this.selectedStation.id + '-password', data.password);
                         localStorage.setItem('station-' + this.selectedStation.id, this.selectedStation.id);
-                        this.navCtrl.setRoot(StationDetailPage, {stationId: this.selectedStation.id});
+                        this.navCtrl.push(StationDetailPage, {stationId: this.selectedStation.id});
                         return;
                     }
 
@@ -100,9 +100,9 @@ export class HomePage implements OnInit {
   }
 
   ngAfterViewInit() {
-    if (!this.auth.getToken()) {
-      this.navCtrl.setRoot(LoginPage);
-    }
+    // if (!this.auth.getToken()) {
+    //   this.navCtrl.setRoot(LoginPage);
+    // }
 
     this.events.subscribe('logout', () => {
 

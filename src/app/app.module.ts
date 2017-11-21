@@ -19,6 +19,7 @@ import { OneSignal } from '@ionic-native/onesignal';
 import { Facebook } from '@ionic-native/facebook';
 import { TabsPageModule } from '../pages/tabs/tabs.module';
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
+import { TokenManagerProvider } from '../providers/token-manager/token-manager';
 
 @NgModule({
   declarations: [
@@ -58,7 +59,8 @@ import { LaunchNavigator } from '@ionic-native/launch-navigator';
     UniqueDeviceID,
     OneSignal,
     Facebook,
-    LaunchNavigator
+    LaunchNavigator,
+    TokenManagerProvider
   ]
 })
 export class AppModule {}

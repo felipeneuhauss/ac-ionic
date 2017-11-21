@@ -1,19 +1,19 @@
 import { Component } from '@angular/core';
 import {
-    IonicPage, NavController, NavParams, AlertController,
-    LoadingController, Platform
+    IonicPage, NavController, NavParams,
+    LoadingController, Platform, AlertController
 } from 'ionic-angular';
 
-import { AuthProvider } from "../../providers/auth/auth";
+import { AuthProvider, USER_TYPE } from "../../providers/auth/auth";
 import { ApiProvider } from "../../providers/api/api";
-import { LoggerProvider } from "../../providers/logger/logger";
 import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
 
 import { HomePage } from "../home/home";
 import { SignUpPage } from "../sign-up/sign-up";
-import { TouchID } from "@ionic-native/touch-id";
-import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
+import { TokenManagerProvider } from '../../providers/token-manager/token-manager';
+import { TouchID } from '@ionic-native/touch-id';
+import { LoggerProvider } from '../../providers/logger/logger';
 
 /**
  * Generated class for the LoginPage page.
@@ -36,41 +36,26 @@ export class LoginPage {
     public showTouchIdButton: boolean = false;
 
     constructor(public navCtrl: NavController, public navParams: NavParams, public loading: LoadingController,
-                private auth: AuthProvider, private api: ApiProvider, private logger: LoggerProvider, public platform: Platform,
-                private touchId: TouchID, private alertCtrl: AlertController, private fb: Facebook,
-                private uniqueDeviceID: UniqueDeviceID, private storage: LocalStorageProvider) {
+                private auth: AuthProvider, private api: ApiProvider,
+                public platform: Platform, private touchId: TouchID,
+                private fb: Facebook, private tokenManager: TokenManagerProvider,
+                private logger: LoggerProvider, private alert: AlertController,
+                private storage: LocalStorageProvider) {
         console.log('constructor LoginPage');
     }
 
     login(res? : any) {
-
-        let loader = this.loading.create({
-            content: 'Aguarde...'
-        });
-        loader.present();
-
-        let email = res ? res.email : this.form.email;
-        let password = res ? res.password : this.form.password;
-
-        this.api.login(email, password).then(
+        this.auth.defaultLogin(this.form.email, this.form.password).then(
             (response: any) => {
-                if (response) {
-                    this.navCtrl.setRoot(HomePage);
-                }
-                loader.dismiss();
+                this.loginSucceeded(response);
             }, (error: any) => {
-                const alert = this.alertCtrl.create({
-                    title: 'Atenção',
-                    subTitle: 'Verifique seu usuário e senha. Pelo visto não estão corretos.',
-                    buttons: ['Tudo bem']
-                });
-                alert.present();
-                this.logger.error(error);
-                loader.dismiss();
+                this.loginFailed(error);
             });
     }
 
     fbLogin() {
+        this.storage.set('user_type', USER_TYPE.FACEBOOK_USER);
+
         this.fb.login(['public_profile', 'user_friends', 'email'])
             .then((res: FacebookLoginResponse) => {
                 if (res.status === "connected") {
@@ -84,7 +69,13 @@ export class LoginPage {
                         payload.provider_id = details.id;
 
                         this.api.post('register-social', payload).then((res) => {
-                            this.login(res);
+                            this.auth.login(res.email, res.password).then(
+                                (response: any) => {
+                                    this.loginSucceeded(response);
+                                }, (error: any) => {
+                                    this.loginFailed(error);
+                                });
+
                         });
                     });
 
@@ -93,50 +84,33 @@ export class LoginPage {
             .catch(e => console.log('Error logging into Facebook', e));
     }
 
+    touchIdLogin() {
+        this.auth.touchIdLogin().then((res) => {
+            console.log('touchIdLogin', res);
+            this.loginSucceeded(res);
+        }, (error) => {
+            this.loginFailed(error);
+        });
+    }
+
     signUpPage() {
         this.navCtrl.setRoot(SignUpPage);
     }
 
-    signInWithTouchId() {
-        this.touchId.verifyFingerprint('Desbloquear usando o Touch ID').then((res) => {
-            let loader = this.loading.create({
-                content: 'Aguarde...'
-            });
-            loader.present();
-            this.uniqueDeviceID.get()
-                .then((uuid: any) => {
-                    console.log('uuid', uuid);
-                    loader.dismiss();
-                    this.api.login(null, null, uuid).then((res) => {
-                        if (res) {
-                            this.navCtrl.setRoot(HomePage);
-                        }
-                    });
-                })
-                .catch((error: any) => {
-                    loader.dismiss();
-                    const alert = this.alertCtrl.create({
-                        title: 'Atenção',
-                        subTitle: 'Não foi possível fazer o login com o Touch ID.',
-                        buttons: ['Tudo bem']
-                    });
-                    alert.present();
-                    console.log(error)
-                });
-        });
-    }
-
     ngAfterViewInit() {
-        if (this.auth.getToken()) {
-            this.navCtrl.setRoot(HomePage);
-        }
+        this.tokenManager.getToken().then((token) => {
+            console.log('token', token)
+            if (token) {
+                this.navCtrl.setRoot(HomePage);
+            }
+        })
 
         if (this.platform.is('cordova')) {
             this.touchId.isAvailable().then((res) => {
                 console.log('Touch ID available');
                 this.showTouchIdButton = true;
                 if (this.storage.get('hasTouchId')) {
-                    this.signInWithTouchId();
+                    this.touchIdLogin();
                 }
             }, (err) =>{
                 console.log('Touch ID is not available');
@@ -145,4 +119,19 @@ export class LoginPage {
         }
     }
 
+    loginSucceeded(response) {
+        if (response) {
+            this.navCtrl.setRoot(HomePage);
+        }
+    }
+
+    loginFailed(error: any) {
+        const alert = this.alert.create({
+            title: 'Atenção',
+            subTitle: 'Verifique seu usuário e senha. Pelo visto não estão corretos.',
+            buttons: ['Tudo bem']
+        });
+        alert.present();
+        this.logger.error(error);
+    }
 }
