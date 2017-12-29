@@ -14,7 +14,7 @@ import { AuthProvider } from '../../providers/auth/auth';
   name: 'sign-up-page'
 })
 @Component({
-  selector: 'sign-up-page',
+  selector: 'page-sign-up',
   templateUrl: 'sign-up.html',
 })
 export class SignUpPage {
@@ -31,8 +31,9 @@ export class SignUpPage {
   }
 
   signUp() {
-    this.auth.register(this.form).subscribe(
+    this.auth.register(this.form).then(
         (response: any) => {
+          console.log(response);
           if (response.success) {
             this.navCtrl.push(LoginPage);
           }

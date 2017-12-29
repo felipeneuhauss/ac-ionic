@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="br.com.aguacinza" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="br.eco.aguacinza" version="3.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>Água Cinza</name>
     <description>Saiba quanto sua estação de reuso está economizado em tempo real.</description>
-    <author email="neuhauss.inbox@gmail.com" href="http://www.felipeneuhauss.com.br/">Felipe Neuhauss</author>
+    <author email="feipe.neuhauss@gmail.com" href="http://www.felipeneuhauss.com.br/">Felipe Neuhauss</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-navigation href="http://ionic.local/*" />
@@ -98,6 +98,6 @@
     <plugin name="uk.co.workingedge.phonegap.plugin.launchnavigator" spec="~4.0.7">
         <variable name="LOCATION_USAGE_DESCRIPTION" value="This app requires access to your location for navigation purposes" />
     </plugin>
-    <engine name="android" spec="~6.1.2" />
     <engine name="ios" spec="~4.3.1" />
+    <engine name="android" spec="~6.1.2" />
 </widget>

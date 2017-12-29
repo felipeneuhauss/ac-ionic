@@ -28,13 +28,7 @@ export class ApiProvider {
     }
 
     initializeApi() {
-        if (this.tokenManager.hasToken()) {
-            this.tokenManager.getToken().then((token) => {
-                if (token) {
-                    this.headers.set('Authorization', 'Bearer ' + token);
-                }
-            })
-        }
+        this.setAuthorizationToken();
     }
 
     get(url: string = '', loadingMessage: string = 'Aguarde...') {
@@ -45,12 +39,17 @@ export class ApiProvider {
 
         loader.present();
 
+        this.setAuthorizationToken();
+
         let options = new RequestOptions({headers: this.headers});
 
         return this.http.get(API_URL + url,
             options).map((res: Response) => {
                 loader.dismiss();
                 return res.json()
+        }, (error) => {
+            console.log('get-error', error);
+            loader.dismiss();
         });
     }
 
@@ -61,6 +60,8 @@ export class ApiProvider {
         });
         loader.present();
 
+        this.setAuthorizationToken();
+
         let options = new RequestOptions({headers: this.headers});
 
         return this.http.post(API_URL + url,
@@ -68,18 +69,24 @@ export class ApiProvider {
             options).toPromise().then((res: any) => {
             loader.dismiss();
             return this.extractData(res);
-        }).catch(this.handleErrorObservable);
+        }, (error) => {
+            loader.dismiss();
+        }).catch((error) => {
+            loader.dismiss();
+        });
+    }
+
+    private setAuthorizationToken() {
+        if (this.tokenManager.getStaticToken()) {
+            this.headers.set('Authorization', 'Bearer ' + this.tokenManager.getStaticToken());
+            console.log('Authorization', this.tokenManager.getStaticToken());
+        }
     }
 
 
     private extractData(res: Response) {
         let body = res.json();
         return body || {};
-    }
-
-    private handleErrorObservable(error: Response | any) {
-        console.error(error.message || error);
-        return Observable.throw(error.message || error);
     }
 
 }

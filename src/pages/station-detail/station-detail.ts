@@ -1,7 +1,6 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {ApiProvider} from "../../providers/api/api";
-import {AuthProvider} from "../../providers/auth/auth";
 import {LoginPage} from "../login/login";
 import {LocalStorageProvider} from "../../providers/local-storage/local-storage";
 import {Chart} from 'chart.js';

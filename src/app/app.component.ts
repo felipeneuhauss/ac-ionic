@@ -14,7 +14,7 @@ import { HomePage } from '../pages/home/home';
 })
 export class MyApp {
 
-  rootPage: any = HomePage;
+  rootPage: any = LoginPage;
 
   touchAvailable : boolean = false;
 
@@ -43,13 +43,6 @@ export class MyApp {
       }, (login) => {
          this.rootPage = login;
       });
-
-      //
-      // this.tokenManager.getToken().then((token) => {
-      //     if (token) {
-      //       this.rootPage = LoginPage;
-      //     }
-      // })
 
       this.initializeTouchId();
 

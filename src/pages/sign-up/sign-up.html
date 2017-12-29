@@ -19,6 +19,7 @@
       <form (ngSubmit)="signUp()" #signUpForm="ngForm" auto-complete="false">
         <ion-list>
           <ion-item>
+            <ion-label stacked>Nome</ion-label>
             <ion-input
             [(ngModel)]="form.name"
             type="text"
@@ -29,28 +30,30 @@
             <div [hidden]="name.valid" class="alert alert-danger"></div>
           </ion-item>
           <ion-item>
+            <ion-label stacked>E-mail</ion-label>
             <ion-input
                     [(ngModel)]="form.email"
                     type="email"
                     name="email"
                     required #email="ngModel"
-                    placeholder="Email Input">
+                    placeholder="E-mail">
 
             </ion-input>
             <div [hidden]="email.valid" class="alert alert-danger">
-              E-mail is required
+              E-mail
             </div>
           </ion-item>
           <ion-item>
+            <ion-label stacked>Senha</ion-label>
             <ion-input [(ngModel)]="form.password"
                        type="password"
                        name="password"
                        required #password="ngModel"
-                       placeholder="Password Input">
+                       placeholder="Senha">
 
             </ion-input>
             <div [hidden]="password.valid" class="alert alert-danger">
-              Password is required
+              Senha
             </div>
           </ion-item>
           <hr />

@@ -1,8 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import { AlertController, Events, IonicPage, NavController, PopoverController } from 'ionic-angular';
 import {ApiProvider} from "../../providers/api/api";
-import {LoginPage} from "../login/login";
-import {AuthProvider} from "../../providers/auth/auth";
 import {StationDetailPage} from "../station-detail/station-detail";
 import { PopoverPage } from '../popover/popover';
 import { ImageLoaderConfig } from 'ionic-image-loader';
@@ -21,7 +19,7 @@ export class HomePage implements OnInit {
   selectedStation: any = {};
 
   constructor(public navCtrl: NavController, private api: ApiProvider, public popoverCtrl: PopoverController,
-              public alertCtrl: AlertController, private auth: AuthProvider, public events: Events,
+              public alertCtrl: AlertController, public events: Events,
               private imageLoaderConfig: ImageLoaderConfig, private launchNavigator: LaunchNavigator) {
 
       this.imageLoaderConfig.enableDebugMode();
@@ -100,9 +98,6 @@ export class HomePage implements OnInit {
   }
 
   ngAfterViewInit() {
-    // if (!this.auth.getToken()) {
-    //   this.navCtrl.setRoot(LoginPage);
-    // }
 
     this.events.subscribe('logout', () => {
 

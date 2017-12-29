@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { LocalStorageProvider } from "../local-storage/local-storage";
-import { Facebook } from '@ionic-native/facebook';
-import { API_URL, BASE_URL } from '../api/api';
+import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
+import { API_URL, ApiProvider, BASE_URL } from '../api/api';
 import { LoadingController, AlertController } from 'ionic-angular';
 import { TokenManagerProvider } from '../token-manager/token-manager';
 import { TouchID } from '@ionic-native/touch-id';
@@ -29,7 +29,7 @@ export class AuthProvider {
     constructor(public http: Http, private storage: LocalStorageProvider,
                 private loading: LoadingController, private alert: AlertController,
                 private fb: Facebook, private tokenManager: TokenManagerProvider,
-                private uniqueDeviceID: UniqueDeviceID,
+                private uniqueDeviceID: UniqueDeviceID, private api: ApiProvider,
                 private touchId: TouchID
                 ) {
         console.log('Hello AuthProvider Provider');
@@ -37,6 +37,9 @@ export class AuthProvider {
 
 
     login(username?: string, password?: string, uniqueToken?: string): Promise<any> {
+        if (username) {
+            this.storage.set('username', username);
+        }
 
         let loader = this.loading.create({
             content: 'Aguarde...'
@@ -63,7 +66,9 @@ export class AuthProvider {
             .toPromise().then((res) => {
                 loader.dismiss();
                 let auth = this.extractLoginData(res);
+                console.log('user_auth', auth);
                 if (auth.access_token) {
+                    this.storage.set('user', auth);
                     resolve(auth);
                     return;
                 }
@@ -76,7 +81,7 @@ export class AuthProvider {
         })
     }
 
-    register(payload) {
+    register(payload): Promise<any> {
         let loader = this.loading.create({
             content: 'Aguarde...'
         });
@@ -88,12 +93,24 @@ export class AuthProvider {
             buttons: ['Ok']
         });
 
-        return this.http.post(API_URL + 'register-user', payload)
-            .map((response: any) => {
+        let alertError = this.alert.create({
+            title: 'Ops!',
+            subTitle: 'Problemas ao registrar. Verifique se você já não está cadastrado.',
+            buttons: ['Ok']
+        });
+
+        return new Promise((resolve, reject) => {
+            this.http.post(API_URL + 'register-user', payload)
+                .toPromise().then((response: any) => {
                 loader.dismiss();
                 alertSuccess.present();
-                return response.json();
+                resolve(response.json());
+            }, (error) => {
+                alertError.present();
+                loader.dismiss();
+                reject(error);
             });
+        });
     }
 
     defaultLogin(username: string, password: string): Promise<any> {
@@ -134,9 +151,82 @@ export class AuthProvider {
         });
     }
 
+    fbLogin(): Promise<any> {
+        this.storage.set('user_type', USER_TYPE.FACEBOOK_USER);
+
+        return new Promise((resolve, reject) => {
+
+            this.fb.login(['public_profile', 'user_friends', 'email'])
+                .then((res: FacebookLoginResponse) => {
+                    if (res.status === "connected") {
+                        let payload: any = {};
+
+                        payload.provider = 'facebook';
+
+                        this.fb.api('/me?fields=name,email', []).then((details)=> {
+                            payload.email = details.email;
+                            payload.name = details.name;
+                            payload.provider_id = details.id;
+
+                            this.api.post('register-social', payload).then((res) => {
+                                this.login(res.email, res.password).then(
+                                    (response: any) => {
+                                        resolve(response);
+                                    }, (error: any) => {
+                                        reject(error);
+                                    });
+
+                            });
+                        });
+                    }
+                })
+                .catch(e => console.log('Error logging into Facebook', e));
+        });
+    }
+
+    refreshFbLogin(): Promise<any> {
+        return new Promise((resolve, reject) => {
+            this.fb.getLoginStatus().then((res: FacebookLoginResponse) => {
+                if (res.status == 'connected') {
+                    let payload: any = {};
+                    payload.provider = 'facebook';
+
+                    this.fb.api('/me?fields=name,email', []).then((details)=> {
+
+                        payload.email = details.email;
+                        payload.name = details.name;
+                        payload.provider_id = details.id;
+
+                        this.api.post('register-social', payload).then((res) => {
+                            this.login(res.email, res.password).then(
+                                (response: any) => {
+                                    resolve(response);
+                                }, (error: any) => {
+                                    reject(error);
+                                });
+
+                        });
+
+                    });
+                }
+            })
+        });
+    }
+
     private refreshTouchIdAuthentication(): Promise<any> {
         return new Promise((resolve, reject) => {
           this.touchIdLogin().then((res) => {
+                console.log('refreshTouchLogin', res);
+                resolve(res);
+            }, (error) => {
+                reject(error);
+            });
+        })
+    }
+
+    private refreshFacebookAuthentication() {
+        return new Promise((resolve, reject) => {
+            this.refreshFbLogin().then((res) => {
                 console.log('refreshTouchLogin', res);
                 resolve(res);
             }, (error) => {
@@ -176,7 +266,7 @@ export class AuthProvider {
         }
 
         if(this.storage.get('userType') === USER_TYPE.FACEBOOK_USER) {
-            // return this.refreshFacebookAuthentication();
+            return this.refreshFacebookAuthentication();
         }
 
         return new Promise((resolve) => {

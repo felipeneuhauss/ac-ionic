@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { LoginPage } from '../login/login';
-import { AuthProvider } from '../../providers/auth/auth';
 import { TouchID } from '@ionic-native/touch-id';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id';
 import { ApiProvider } from '../../providers/api/api';
 import { LocalStorageProvider } from '../../providers/local-storage/local-storage';
 import { TokenManagerProvider } from '../../providers/token-manager/token-manager';
+import { USER_TYPE } from '../../providers/auth/auth';
 
 /**
  * Generated class for the PopoverPage page.
@@ -26,8 +26,7 @@ export class PopoverPage implements OnInit {
 
   showTouchIdOption: boolean = false;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams,
-              private auth: AuthProvider, public viewCtrl: ViewController,
+  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
               private touchId: TouchID, private uniqueDeviceID: UniqueDeviceID,
               private alertCtrl: AlertController, private api: ApiProvider,
               private storage: LocalStorageProvider, private tokenManager: TokenManagerProvider) {
@@ -54,11 +53,11 @@ export class PopoverPage implements OnInit {
           (res) => {
               this.uniqueDeviceID.get()
                   .then((uuid: any) => {
-                      console.log('uuid', uuid);
                       this.api.post('register-touch-id',
-                          {username: this.auth.user().username, unique_token: uuid}).then(
+                          {username: this.storage.get('username'), unique_token: uuid}).then(
                           (res) => {
                               console.log('Ok, finger print saved', res);
+                              this.storage.set('user_type', USER_TYPE.TOUCH_ID_USER);
                               if (res.success) {
                                   const alert = this.alertCtrl.create({
                                       title: 'Sucesso!',
@@ -78,7 +77,9 @@ export class PopoverPage implements OnInit {
                               }
                           });
                   })
-                  .catch((error: any) => console.log(error));
+                  .catch((error: any) =>
+                      console.log(error)
+                  );
 
           },
           (err) => {

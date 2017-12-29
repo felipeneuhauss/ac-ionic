@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
-import { USER_TYPE } from '../auth/auth';
 import { LocalStorageProvider } from '../local-storage/local-storage';
 
 /*
@@ -31,7 +30,7 @@ export class TokenManagerProvider {
         return !(Date.now() > parseInt(expiration));
     }
 
-    getToken() {
+    getToken(): Promise<any> {
         return new Promise((resolve) => {
             let token = this.storage.get('token');
             let expiration = this.storage.get('expiration');
@@ -44,6 +43,10 @@ export class TokenManagerProvider {
             resolve(null);
             return;
         });
+    }
+
+    getStaticToken(): string {
+      return this.storage.get('token');
     }
 
     hasToken() {

@@ -5,8 +5,6 @@ import {
 } from 'ionic-angular';
 
 import { AuthProvider, USER_TYPE } from "../../providers/auth/auth";
-import { ApiProvider } from "../../providers/api/api";
-import { Facebook, FacebookLoginResponse } from '@ionic-native/facebook';
 
 import { HomePage } from "../home/home";
 import { SignUpPage } from "../sign-up/sign-up";
@@ -36,15 +34,15 @@ export class LoginPage {
     public showTouchIdButton: boolean = false;
 
     constructor(public navCtrl: NavController, public navParams: NavParams, public loading: LoadingController,
-                private auth: AuthProvider, private api: ApiProvider,
-                public platform: Platform, private touchId: TouchID,
-                private fb: Facebook, private tokenManager: TokenManagerProvider,
+                private auth: AuthProvider,
+                public platform: Platform, private touchId: TouchID, private tokenManager: TokenManagerProvider,
                 private logger: LoggerProvider, private alert: AlertController,
                 private storage: LocalStorageProvider) {
         console.log('constructor LoginPage');
     }
 
-    login(res? : any) {
+    login() {
+        console.log('defaultLogin');
         this.auth.defaultLogin(this.form.email, this.form.password).then(
             (response: any) => {
                 this.loginSucceeded(response);
@@ -54,43 +52,33 @@ export class LoginPage {
     }
 
     fbLogin() {
-        this.storage.set('user_type', USER_TYPE.FACEBOOK_USER);
-
-        this.fb.login(['public_profile', 'user_friends', 'email'])
-            .then((res: FacebookLoginResponse) => {
-                if (res.status === "connected") {
-                    let payload: any = {};
-
-                    payload.provider = 'facebook';
-
-                    this.fb.api('/me?fields=name,email', []).then((details)=> {
-                        payload.email = details.email;
-                        payload.name = details.name;
-                        payload.provider_id = details.id;
-
-                        this.api.post('register-social', payload).then((res) => {
-                            this.auth.login(res.email, res.password).then(
-                                (response: any) => {
-                                    this.loginSucceeded(response);
-                                }, (error: any) => {
-                                    this.loginFailed(error);
-                                });
-
-                        });
-                    });
-
-                }
-            })
-            .catch(e => console.log('Error logging into Facebook', e));
+        console.log('fbLogin');
+        this.auth.fbLogin().then(
+            (response: any) => {
+                this.loginSucceeded(response);
+            }, (error: any) => {
+                this.loginFailed(error);
+            });
     }
 
     touchIdLogin() {
-        this.auth.touchIdLogin().then((res) => {
-            console.log('touchIdLogin', res);
-            this.loginSucceeded(res);
-        }, (error) => {
-            this.loginFailed(error);
+        if (this.storage.get('user_type') == USER_TYPE.TOUCH_ID_USER) {
+
+            this.auth.touchIdLogin().then((res) => {
+                console.log('touchIdLogin', res);
+                this.loginSucceeded(res);
+            }, (error) => {
+                this.loginFailed(error);
+            });
+
+            return;
+        }
+        const alert = this.alert.create({
+            title: 'Atenção',
+            subTitle: 'Faça o login e ative o Touch ID no menu da tela principal.',
+            buttons: ['Ok.']
         });
+        alert.present();
     }
 
     signUpPage() {
@@ -99,11 +87,10 @@ export class LoginPage {
 
     ngAfterViewInit() {
         this.tokenManager.getToken().then((token) => {
-            console.log('token', token)
             if (token) {
                 this.navCtrl.setRoot(HomePage);
             }
-        })
+        });
 
         if (this.platform.is('cordova')) {
             this.touchId.isAvailable().then((res) => {
