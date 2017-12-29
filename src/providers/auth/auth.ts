@@ -246,26 +246,34 @@ export class AuthProvider {
             this.tokenManager.getToken().then((token) => {
                 if (token) {
                     resolve(true);
-                } else {
-                    this.refreshToken().then((user?: string, password?: string, uuid?: string) => {
-                        this.login(user, password, uuid).then((user: any) => {
-                            resolve(user);
-                        }, (error) => {
-                            reject(error);
-                        });
-                    });
+                    return;
                 }
-            })
+                this.refreshToken().then((user?: string, password?: string, uuid?: string) => {
+                    this.login(user, password, uuid).then((user: any) => {
+                        resolve(user);
+                    }, (error) => {
+                        reject(error);
+                    });
+                });
+            });
         });
     }
 
     refreshToken(): Promise<any> {
-        console.log('userType', this.storage.get('userType'));
-        if(this.storage.get('userType') === USER_TYPE.TOUCH_ID_USER) {
+
+
+        let userType = this.storage.get('userType');
+        console.log('userType', userType);
+
+        if (!userType) {
+            return;
+        }
+
+        if(userType === USER_TYPE.TOUCH_ID_USER) {
             return this.refreshTouchIdAuthentication();
         }
 
-        if(this.storage.get('userType') === USER_TYPE.FACEBOOK_USER) {
+        if(userType === USER_TYPE.FACEBOOK_USER) {
             return this.refreshFacebookAuthentication();
         }
 

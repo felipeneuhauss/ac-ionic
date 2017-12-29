@@ -40,7 +40,6 @@ export class TokenManagerProvider {
                 return;
             }
 
-            resolve(null);
             return;
         });
     }
