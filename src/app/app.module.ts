@@ -20,6 +20,7 @@ import { Facebook } from '@ionic-native/facebook';
 import { TabsPageModule } from '../pages/tabs/tabs.module';
 import { LaunchNavigator } from '@ionic-native/launch-navigator';
 import { TokenManagerProvider } from '../providers/token-manager/token-manager';
+import { IonicStorageModule } from '@ionic/storage';
 
 @NgModule({
   declarations: [
@@ -37,10 +38,11 @@ import { TokenManagerProvider } from '../providers/token-manager/token-manager';
       tabsPlacement: 'bottom',
       pageTransition: 'ios-transition'*/
     }),
+    IonicStorageModule.forRoot(),
     IonicImageLoader.forRoot(),
     FormsModule,
     ReactiveFormsModule,
-    TabsPageModule
+    TabsPageModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [

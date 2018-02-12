@@ -25,12 +25,19 @@ export class HomePage implements OnInit {
       this.imageLoaderConfig.enableDebugMode();
   }
 
-  getStations() {
-    this.api.get('stations').subscribe(
+  getStations() : Promise<any> {
+    return new Promise((resolve) => {
+        this.api.get('stations').subscribe(
         (response) => {
           this.stations = response;
-        }
-    )
+          resolve();
+        })
+    });
+  }
+
+  async doRefresh(refresher) {
+      await this.getStations();
+      refresher.complete();
   }
 
   selectStation(station: any) {
